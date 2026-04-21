@@ -3,99 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מרכז פיצוח - חדר בריחה 2026</title>
+    <title>מנוע חדר בריחה 2026</title>
     <style>
-        :root {
-            --primary: #f1c40f;
-            --bg: #121212;
-            --card-bg: #1e1e1e;
-            --success: #27ae60;
-        }
         body { 
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-            background-color: var(--bg); 
-            color: white; 
+            font-family: system-ui, sans-serif; 
             margin: 0; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
+            padding: 0; 
+            background: #121212; 
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
-        .container {
-            width: 90%;
-            max-width: 450px;
-            background: var(--card-bg);
-            padding: 40px 20px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
-            border: 2px solid #333;
+        /* אזור ההוראות והפתיחה */
+        .header {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
             text-align: center;
         }
-        h1 { color: var(--primary); margin-bottom: 10px; font-size: 28px; }
-        p { color: #aaa; margin-bottom: 30px; }
-        .input-wrapper { margin-bottom: 25px; }
+        h1 { color: #f1c40f; font-size: 24px; margin-bottom: 10px; }
+        
+        /* פאנל השליטה התחתון - נשאר קבוע */
+        .control-panel {
+            background: #1e1e1e;
+            padding: 20px;
+            border-top: 3px solid #f1c40f;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
         input {
-            width: 85%;
             padding: 15px;
-            border: 2px solid #444;
-            border-radius: 12px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: 2px solid #333;
             background: #2c2c2c;
             color: white;
-            font-size: 20px;
             text-align: center;
-            outline: none;
-            transition: border-color 0.3s;
         }
-        input:focus { border-color: var(--primary); }
         button {
-            width: 90%;
             padding: 15px;
-            background: var(--success);
+            font-size: 18px;
+            font-weight: bold;
+            background: #27ae60;
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 20px;
-            font-weight: bold;
+            border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
         }
-        button:active { transform: scale(0.96); background: #2ecc71; }
-        .footer-note { margin-top: 20px; font-size: 12px; color: #666; }
+        .status {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>מנוע ניווט</h1>
-    <p>הזינו את הקוד שמצאתם כדי לעבור לשלב הבא</p>
-    
-    <div class="input-wrapper">
-        <input type="text" id="passcode" placeholder="הקוד כאן..." autocomplete="off" spellcheck="false">
+<div class="header">
+    <h1>חדר בריחה 2026</h1>
+    <p>המשחק יפתח בלשונית נפרדת.<br>בכל פעם שתמצאו קוד, חזרו לכאן כדי להזין אותו ולעבור לשלב הבא.</p>
+    <button onclick="openOriginal()" style="background:#2980b9; padding: 10px 20px; font-size: 16px;">פתח את דף הפתיחה</button>
+</div>
+
+<div class="control-panel">
+    <div class="input-group">
+        <input type="text" id="answer" placeholder="הכנס קוד שלב כאן..." autocomplete="off">
+        <button onclick="navigate()">פצח ועבור שלב!</button>
     </div>
-    
-    <button onclick="navigate()">פצח ועבור שלב</button>
-    
-    <div class="footer-note">מבוסס על חדר הבריחה של עידו 2026</div>
+    <div class="status" id="status">ממתין לקוד הראשון...</div>
 </div>
 
 <script>
-    function navigate() {
-        const code = document.getElementById('passcode').value.trim().toLowerCase();
-        
-        if (code === "") {
-            alert("אנא הזינו קוד.");
-            return;
-        }
+    let gameWindow = null;
 
-        // בניית הכתובת - שים לב: זה יעביר את המשתמש לאתר של עידו באותו טאב
-        const targetUrl = "https://sites.google.com/view/" + code;
-        
-        // הפעולה הזו עובדת ב-GitHub Pages בצורה חלקה
-        window.location.href = targetUrl;
+    function openOriginal() {
+        // פותח את דף הפתיחה המקורי שביקשת
+        gameWindow = window.open("https://sites.google.com/view/escaperoom2026ido", "IdoEscape");
+        document.getElementById('status').innerText = "המשחק פתוח בלשונית השנייה";
     }
 
-    // מאפשר לחיצה על Enter במקלדת
-    document.getElementById('passcode').addEventListener("keypress", function(e) {
+    function navigate() {
+        const val = document.getElementById('answer').value.trim().toLowerCase();
+        if (!val) return;
+
+        const targetUrl = "https://sites.google.com/view/" + val;
+
+        // אם החלון כבר פתוח, נעדכן אותו. אם לא, נפתח חדש.
+        if (gameWindow && !gameWindow.closed) {
+            gameWindow.location.href = targetUrl;
+            gameWindow.focus();
+        } else {
+            gameWindow = window.open(targetUrl, "IdoEscape");
+        }
+
+        document.getElementById('status').innerText = "עובר לשלב: " + val;
+        document.getElementById('answer').value = "";
+    }
+
+    // תמיכה ב-Enter
+    document.getElementById('answer').addEventListener("keypress", function(e) {
         if (e.key === "Enter") navigate();
     });
 </script>
