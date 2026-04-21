@@ -3,76 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מנוע חדר בריחה</title>
+    <title>מרכז פיצוח - חדר בריחה 2026</title>
     <style>
+        :root {
+            --primary: #f1c40f;
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --success: #27ae60;
+        }
         body { 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            background: #121212; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background-color: var(--bg); 
             color: white; 
+            margin: 0; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             height: 100vh; 
-            margin: 0; 
         }
-        .card { 
-            background: #1e1e1e; 
-            padding: 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            width: 90%; 
-            max-width: 400px; 
-            text-align: center;
-            border: 1px solid #333;
-        }
-        input { 
-            width: 100%; 
-            padding: 15px; 
-            margin: 20px 0; 
-            border-radius: 10px; 
-            border: 2px solid #3498db; 
-            background: #2c2c2c; 
-            color: white; 
-            font-size: 18px; 
-            box-sizing: border-box;
+        .container {
+            width: 90%;
+            max-width: 450px;
+            background: var(--card-bg);
+            padding: 40px 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+            border: 2px solid #333;
             text-align: center;
         }
-        button { 
-            width: 100%; 
-            padding: 15px; 
-            background: #27ae60; 
-            color: white; 
-            border: none; 
-            border-radius: 10px; 
-            font-size: 20px; 
-            font-weight: bold; 
+        h1 { color: var(--primary); margin-bottom: 10px; font-size: 28px; }
+        p { color: #aaa; margin-bottom: 30px; }
+        .input-wrapper { margin-bottom: 25px; }
+        input {
+            width: 85%;
+            padding: 15px;
+            border: 2px solid #444;
+            border-radius: 12px;
+            background: #2c2c2c;
+            color: white;
+            font-size: 20px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus { border-color: var(--primary); }
+        button {
+            width: 90%;
+            padding: 15px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
+            transition: transform 0.2s, background 0.2s;
         }
-        button:active { transform: scale(0.95); background: #2ecc71; }
+        button:active { transform: scale(0.96); background: #2ecc71; }
+        .footer-note { margin-top: 20px; font-size: 12px; color: #666; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>פצח את השלב</h2>
-    <p>הזן את הקוד שגילית:</p>
-    <input type="text" id="answer" placeholder="הקלד כאן..." autocomplete="off">
-    <button onclick="go()">שגר אותי!</button>
+<div class="container">
+    <h1>מנוע ניווט</h1>
+    <p>הזינו את הקוד שמצאתם כדי לעבור לשלב הבא</p>
+    
+    <div class="input-wrapper">
+        <input type="text" id="passcode" placeholder="הקוד כאן..." autocomplete="off" spellcheck="false">
+    </div>
+    
+    <button onclick="navigate()">פצח ועבור שלב</button>
+    
+    <div class="footer-note">מבוסס על חדר הבריחה של עידו 2026</div>
 </div>
 
 <script>
-    function go() {
-        const sol = document.getElementById('answer').value.trim().toLowerCase();
-        if (sol) {
-            // באתר חיצוני זה יעבוד חלק ויחליף את הדף הנוכחי
-            window.location.href = "https://sites.google.com/view/" + sol;
+    function navigate() {
+        const code = document.getElementById('passcode').value.trim().toLowerCase();
+        
+        if (code === "") {
+            alert("אנא הזינו קוד.");
+            return;
         }
+
+        // בניית הכתובת - שים לב: זה יעביר את המשתמש לאתר של עידו באותו טאב
+        const targetUrl = "https://sites.google.com/view/" + code;
+        
+        // הפעולה הזו עובדת ב-GitHub Pages בצורה חלקה
+        window.location.href = targetUrl;
     }
-    
-    // תמיכה ב-Enter במקלדת של הנייד
-    document.getElementById('answer').addEventListener("keypress", function(e) {
-        if (e.key === "Enter") go();
+
+    // מאפשר לחיצה על Enter במקלדת
+    document.getElementById('passcode').addEventListener("keypress", function(e) {
+        if (e.key === "Enter") navigate();
     });
 </script>
 
