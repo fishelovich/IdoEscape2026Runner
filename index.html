@@ -3,77 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מרכז פיצוח 2026</title>
+    <title>מרכז בקרה - חדר בריחה 2026</title>
     <style>
-        body { 
-            font-family: system-ui, -apple-system, sans-serif; 
-            margin: 0; background: #121212; color: white;
-            display: flex; flex-direction: column; height: 100vh; align-items: center; justify-content: center;
+        :root {
+            --gold: #f1c40f;
+            --bg: #121212;
+            --card: #1e1e1e;
         }
-        .card {
-            width: 85%; max-width: 400px; background: #1e1e1e; padding: 30px;
-            border-radius: 20px; border: 2px solid #f1c40f; text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; background-color: var(--bg); color: white; 
+            display: flex; align-items: center; justify-content: center; height: 100vh;
+        }
+        .container {
+            width: 90%; max-width: 400px; background: var(--card); padding: 30px;
+            border-radius: 20px; border: 2px solid var(--gold); text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+        h2 { color: var(--gold); margin-top: 0; }
+        .step-box {
+            background: #2c2c2c; padding: 15px; border-radius: 12px; margin-bottom: 20px;
+            font-size: 14px; line-height: 1.5; border-right: 4px solid var(--gold);
         }
         input {
-            width: 100%; padding: 15px; margin: 20px 0; border-radius: 10px;
-            border: 2px solid #333; background: #2c2c2c; color: white; font-size: 18px;
+            width: 100%; padding: 15px; margin: 15px 0; border-radius: 10px;
+            border: 2px solid #444; background: #222; color: white; font-size: 18px;
             box-sizing: border-box; text-align: center;
         }
-        .btn-main {
-            width: 100%; padding: 15px; background: #27ae60; color: white;
-            border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer;
+        .btn {
+            width: 100%; padding: 15px; border: none; border-radius: 10px;
+            font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s;
+            margin-bottom: 10px;
         }
-        .btn-start {
-            background: #2980b9; margin-bottom: 10px;
-        }
-        .status { margin-top: 15px; font-size: 14px; color: #888; }
+        .btn-start { background: #2980b9; color: white; }
+        .btn-solve { background: #27ae60; color: white; }
+        .btn:active { transform: scale(0.96); opacity: 0.9; }
+        .status { font-size: 12px; color: #777; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h1 style="color:#f1c40f; margin:0 0 10px 0;">מרכז שליטה</h1>
-    <p>1. לחץ על הכפתור הכחול לפתיחת המשחק.</p>
-    <p>2. בכל פעם שתמצא קוד, חזור לכאן והזן אותו.</p>
+<div class="container">
+    <h2>מנוע חדר בריחה</h2>
+    
+    <div class="step-box">
+        <b>שלב 1:</b> לחצו על הכפתור הכחול לפתיחת המשחק.<br>
+        <b>שלב 2:</b> חזרו לכאן כדי להזין פתרונות.
+    </div>
 
-    <button class="btn-main btn-start" onclick="openGame()">פתח/אפס משחק</button>
+    <button class="btn btn-start" onclick="startEscape()">🚀 התחל משחק (פתח דף פתיחה)</button>
     
-    <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
+    <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
     
-    <input type="text" id="code" placeholder="הכנס קוד שלב..." autocomplete="off">
-    <button class="btn-main" onclick="sendCode()">שגר לשלב הבא</button>
+    <input type="text" id="answer" placeholder="הכנס קוד פיצוח..." autocomplete="off">
+    <button class="btn btn-solve" onclick="sendAnswer()">🔓 פצח ועבור שלב</button>
     
-    <div id="msg" class="status">ממתין להתחלה...</div>
+    <div id="log" class="status">ממתין לפעולה...</div>
 </div>
 
 <script>
-    let gameTab = null;
+    let gameWindow = null;
 
-    function openGame() {
-        // פותח את הדף הראשון שביקשת
-        gameTab = window.open("https://sites.google.com/view/escaperoom2026ido", "EscapeGameTab");
-        document.getElementById('msg').innerText = "המשחק פתוח בלשונית נפרדת";
+    function startEscape() {
+        // פותח את דף הפתיחה בטאב נפרד עם שם קבוע
+        gameWindow = window.open("https://sites.google.com/view/escaperoom2026ido", "EscapeGameTab");
+        document.getElementById('log').innerText = "המשחק נפתח בלשונית נפרדת.";
     }
 
-    function sendCode() {
-        const val = document.getElementById('code').value.trim().toLowerCase();
-        if (!val) return;
-
-        const targetUrl = "https://sites.google.com/view/" + val;
-
-        if (gameTab && !gameTab.closed) {
-            // מעדכן את הלשונית הקיימת בלי לפתוח חדשה!
-            gameTab.location.href = targetUrl;
-            gameTab.focus();
-            document.getElementById('msg').innerText = "השלב התעדכן ל: " + val;
-        } else {
-            // אם המשתמש סגר את הלשונית, נפתח חדשה
-            gameTab = window.open(targetUrl, "EscapeGameTab");
-            document.getElementById('msg').innerText = "נפתחה לשונית חדשה בשלב: " + val;
+    function sendAnswer() {
+        const val = document.getElementById('answer').value.trim().toLowerCase();
+        if (!val) {
+            alert("נא להזין קוד");
+            return;
         }
-        document.getElementById('code').value = "";
+
+        const nextUrl = "https://sites.google.com/view/" + val;
+
+        // אם החלון פתוח, נעדכן אותו. אם נסגר, נפתח חדש.
+        if (gameWindow && !gameWindow.closed) {
+            gameWindow.location.href = nextUrl;
+            gameWindow.focus();
+            document.getElementById('log').innerText = "מעדכן לשלב: " + val;
+        } else {
+            gameWindow = window.open(nextUrl, "EscapeGameTab");
+            document.getElementById('log').innerText = "פותח שלב חדש: " + val;
+        }
+        
+        document.getElementById('answer').value = "";
     }
+
+    // תמיכה ב-Enter
+    document.getElementById('answer').addEventListener("keypress", function(e) {
+        if (e.key === "Enter") sendAnswer();
+    });
 </script>
 
 </body>
