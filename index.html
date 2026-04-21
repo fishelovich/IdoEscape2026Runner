@@ -2,100 +2,88 @@
 <html dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>מרכז בקרה - חדר בריחה</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שלט רחוק - חדר בריחה</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #121212; }
-        
-        /* פאנל ההזנה - נשאר למעלה כל הזמן */
-        #control-bar {
-            height: 80px;
+        body { 
+            font-family: sans-serif; 
+            background: #121212; 
+            color: white; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh;
+            overflow: hidden;
+        }
+        .controller {
+            width: 90%;
+            max-width: 400px;
             background: #1e1e1e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 0 15px;
-            border-bottom: 2px solid #f1c40f;
-            box-sizing: border-box;
-            z-index: 100;
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #f1c40f;
+            box-shadow: 0 0 20px rgba(241, 196, 15, 0.2);
+            text-align: center;
         }
-
         input {
-            flex: 1;
-            max-width: 200px;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #444;
-            background: #2c2c2c;
-            color: white;
-            font-size: 16px;
+            width: 80%;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 20px;
+            border-radius: 10px;
+            border: none;
+            text-align: center;
         }
-
         button {
-            padding: 12px 20px;
+            width: 85%;
+            padding: 15px;
             background: #27ae60;
             color: white;
             border: none;
-            border-radius: 8px;
+            font-size: 20px;
             font-weight: bold;
+            border-radius: 10px;
             cursor: pointer;
-            white-space: nowrap;
         }
-
-        /* האזור שבו מוצג המשחק */
-        #content-area {
-            height: calc(100% - 80px);
-            width: 100%;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .blocked-message {
-            padding: 20px;
-            color: #333;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+        .hint { color: #888; font-size: 14px; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-<div id="control-bar">
-    <input type="text" id="pass" placeholder="הכנס קוד..." autocomplete="off">
-    <button onclick="go()">פצח!</button>
-</div>
-
-<div id="content-area">
-    <iframe id="game-frame" src="https://sites.google.com/view/escaperoom2026ido"></iframe>
+<div class="controller">
+    <h2 style="color:#f1c40f; margin-bottom: 0;">מרכז שליטה</h2>
+    <p style="font-size: 14px;">הזינו קוד והוא יתעדכן בלשונית המשחק</p>
+    
+    <input type="text" id="code" placeholder="הכנס קוד..." autocomplete="off">
+    <br>
+    <button onclick="updateGame()">שלח לשלב הבא</button>
+    
+    <div class="hint">
+        <b>טיפ למובייל:</b> השאירו את הדף הזה פתוח ועברו בין הלשוניות בדפדפן.
+    </div>
 </div>
 
 <script>
-    function go() {
-        const code = document.getElementById('pass').value.trim().toLowerCase();
-        if (!code) return;
+    let gameWindow = null;
 
-        const url = "https://sites.google.com/view/" + code;
-        const frame = document.getElementById('game-frame');
+    function updateGame() {
+        const val = document.getElementById('code').value.trim().toLowerCase();
+        // אם זה הקוד הראשון, פתח את האתר המקורי של עידו
+        const targetUrl = val ? "https://sites.google.com/view/" + val : "https://sites.google.com/view/escaperoom2026ido";
+
+        if (!gameWindow || gameWindow.closed) {
+            // פתיחת חלון חדש בפעם הראשונה
+            gameWindow = window.open(targetUrl, "IdoEscapeGame");
+        } else {
+            // עדכון החלון הקיים בלי שהמשתמש יצטרך לפתוח חדש
+            gameWindow.location.href = targetUrl;
+            gameWindow.focus();
+        }
         
-        // עדכון ה-iframe
-        frame.src = url;
-        
-        // ניקוי הקלט
-        document.getElementById('pass').value = "";
+        document.getElementById('code').value = "";
     }
-
-    // תמיכה ב-Enter
-    document.getElementById('pass').addEventListener("keypress", function(e) {
-        if (e.key === "Enter") go();
-    });
 </script>
 
 </body>
