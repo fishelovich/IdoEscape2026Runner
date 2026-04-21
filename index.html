@@ -3,85 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>שלט רחוק - חדר בריחה</title>
+    <title>מרכז פיצוח 2026</title>
     <style>
         body { 
-            font-family: sans-serif; 
-            background: #121212; 
-            color: white; 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh;
-            overflow: hidden;
+            font-family: system-ui, -apple-system, sans-serif; 
+            margin: 0; background: #121212; color: white;
+            display: flex; flex-direction: column; height: 100vh; align-items: center; justify-content: center;
         }
-        .controller {
-            width: 90%;
-            max-width: 400px;
-            background: #1e1e1e;
-            padding: 30px;
-            border-radius: 20px;
-            border: 2px solid #f1c40f;
-            box-shadow: 0 0 20px rgba(241, 196, 15, 0.2);
-            text-align: center;
+        .card {
+            width: 85%; max-width: 400px; background: #1e1e1e; padding: 30px;
+            border-radius: 20px; border: 2px solid #f1c40f; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         input {
-            width: 80%;
-            padding: 15px;
-            margin: 20px 0;
-            font-size: 20px;
-            border-radius: 10px;
-            border: none;
-            text-align: center;
+            width: 100%; padding: 15px; margin: 20px 0; border-radius: 10px;
+            border: 2px solid #333; background: #2c2c2c; color: white; font-size: 18px;
+            box-sizing: border-box; text-align: center;
         }
-        button {
-            width: 85%;
-            padding: 15px;
-            background: #27ae60;
-            color: white;
-            border: none;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
+        .btn-main {
+            width: 100%; padding: 15px; background: #27ae60; color: white;
+            border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer;
         }
-        .hint { color: #888; font-size: 14px; margin-top: 15px; }
+        .btn-start {
+            background: #2980b9; margin-bottom: 10px;
+        }
+        .status { margin-top: 15px; font-size: 14px; color: #888; }
     </style>
 </head>
 <body>
 
-<div class="controller">
-    <h2 style="color:#f1c40f; margin-bottom: 0;">מרכז שליטה</h2>
-    <p style="font-size: 14px;">הזינו קוד והוא יתעדכן בלשונית המשחק</p>
+<div class="card">
+    <h1 style="color:#f1c40f; margin:0 0 10px 0;">מרכז שליטה</h1>
+    <p>1. לחץ על הכפתור הכחול לפתיחת המשחק.</p>
+    <p>2. בכל פעם שתמצא קוד, חזור לכאן והזן אותו.</p>
+
+    <button class="btn-main btn-start" onclick="openGame()">פתח/אפס משחק</button>
     
-    <input type="text" id="code" placeholder="הכנס קוד..." autocomplete="off">
-    <br>
-    <button onclick="updateGame()">שלח לשלב הבא</button>
+    <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
     
-    <div class="hint">
-        <b>טיפ למובייל:</b> השאירו את הדף הזה פתוח ועברו בין הלשוניות בדפדפן.
-    </div>
+    <input type="text" id="code" placeholder="הכנס קוד שלב..." autocomplete="off">
+    <button class="btn-main" onclick="sendCode()">שגר לשלב הבא</button>
+    
+    <div id="msg" class="status">ממתין להתחלה...</div>
 </div>
 
 <script>
-    let gameWindow = null;
+    let gameTab = null;
 
-    function updateGame() {
+    function openGame() {
+        // פותח את הדף הראשון שביקשת
+        gameTab = window.open("https://sites.google.com/view/escaperoom2026ido", "EscapeGameTab");
+        document.getElementById('msg').innerText = "המשחק פתוח בלשונית נפרדת";
+    }
+
+    function sendCode() {
         const val = document.getElementById('code').value.trim().toLowerCase();
-        // אם זה הקוד הראשון, פתח את האתר המקורי של עידו
-        const targetUrl = val ? "https://sites.google.com/view/" + val : "https://sites.google.com/view/escaperoom2026ido";
+        if (!val) return;
 
-        if (!gameWindow || gameWindow.closed) {
-            // פתיחת חלון חדש בפעם הראשונה
-            gameWindow = window.open(targetUrl, "IdoEscapeGame");
+        const targetUrl = "https://sites.google.com/view/" + val;
+
+        if (gameTab && !gameTab.closed) {
+            // מעדכן את הלשונית הקיימת בלי לפתוח חדשה!
+            gameTab.location.href = targetUrl;
+            gameTab.focus();
+            document.getElementById('msg').innerText = "השלב התעדכן ל: " + val;
         } else {
-            // עדכון החלון הקיים בלי שהמשתמש יצטרך לפתוח חדש
-            gameWindow.location.href = targetUrl;
-            gameWindow.focus();
+            // אם המשתמש סגר את הלשונית, נפתח חדשה
+            gameTab = window.open(targetUrl, "EscapeGameTab");
+            document.getElementById('msg').innerText = "נפתחה לשונית חדשה בשלב: " + val;
         }
-        
         document.getElementById('code').value = "";
     }
 </script>
