@@ -2,118 +2,99 @@
 <html dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מנוע חדר בריחה 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>מרכז בקרה - חדר בריחה</title>
     <style>
-        body { 
-            font-family: system-ui, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            background: #121212; 
-            color: white;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-        /* אזור ההוראות והפתיחה */
-        .header {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            text-align: center;
-        }
-        h1 { color: #f1c40f; font-size: 24px; margin-bottom: 10px; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #121212; }
         
-        /* פאנל השליטה התחתון - נשאר קבוע */
-        .control-panel {
+        /* פאנל ההזנה - נשאר למעלה כל הזמן */
+        #control-bar {
+            height: 80px;
             background: #1e1e1e;
-            padding: 20px;
-            border-top: 3px solid #f1c40f;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-        }
-        .input-group {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             gap: 10px;
-            max-width: 500px;
-            margin: 0 auto;
+            padding: 0 15px;
+            border-bottom: 2px solid #f1c40f;
+            box-sizing: border-box;
+            z-index: 100;
         }
+
         input {
-            padding: 15px;
-            font-size: 18px;
-            border-radius: 10px;
-            border: 2px solid #333;
+            flex: 1;
+            max-width: 200px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
             background: #2c2c2c;
             color: white;
-            text-align: center;
+            font-size: 16px;
         }
+
         button {
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
+            padding: 12px 20px;
             background: #27ae60;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
+            font-weight: bold;
             cursor: pointer;
+            white-space: nowrap;
         }
-        .status {
-            font-size: 12px;
-            color: #888;
-            margin-top: 10px;
+
+        /* האזור שבו מוצג המשחק */
+        #content-area {
+            height: calc(100% - 80px);
+            width: 100%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
+        }
+
+        .blocked-message {
+            padding: 20px;
+            color: #333;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>חדר בריחה 2026</h1>
-    <p>המשחק יפתח בלשונית נפרדת.<br>בכל פעם שתמצאו קוד, חזרו לכאן כדי להזין אותו ולעבור לשלב הבא.</p>
-    <button onclick="openOriginal()" style="background:#2980b9; padding: 10px 20px; font-size: 16px;">פתח את דף הפתיחה</button>
+<div id="control-bar">
+    <input type="text" id="pass" placeholder="הכנס קוד..." autocomplete="off">
+    <button onclick="go()">פצח!</button>
 </div>
 
-<div class="control-panel">
-    <div class="input-group">
-        <input type="text" id="answer" placeholder="הכנס קוד שלב כאן..." autocomplete="off">
-        <button onclick="navigate()">פצח ועבור שלב!</button>
-    </div>
-    <div class="status" id="status">ממתין לקוד הראשון...</div>
+<div id="content-area">
+    <iframe id="game-frame" src="https://sites.google.com/view/escaperoom2026ido"></iframe>
 </div>
 
 <script>
-    let gameWindow = null;
+    function go() {
+        const code = document.getElementById('pass').value.trim().toLowerCase();
+        if (!code) return;
 
-    function openOriginal() {
-        // פותח את דף הפתיחה המקורי שביקשת
-        gameWindow = window.open("https://sites.google.com/view/escaperoom2026ido", "IdoEscape");
-        document.getElementById('status').innerText = "המשחק פתוח בלשונית השנייה";
-    }
-
-    function navigate() {
-        const val = document.getElementById('answer').value.trim().toLowerCase();
-        if (!val) return;
-
-        const targetUrl = "https://sites.google.com/view/" + val;
-
-        // אם החלון כבר פתוח, נעדכן אותו. אם לא, נפתח חדש.
-        if (gameWindow && !gameWindow.closed) {
-            gameWindow.location.href = targetUrl;
-            gameWindow.focus();
-        } else {
-            gameWindow = window.open(targetUrl, "IdoEscape");
-        }
-
-        document.getElementById('status').innerText = "עובר לשלב: " + val;
-        document.getElementById('answer').value = "";
+        const url = "https://sites.google.com/view/" + code;
+        const frame = document.getElementById('game-frame');
+        
+        // עדכון ה-iframe
+        frame.src = url;
+        
+        // ניקוי הקלט
+        document.getElementById('pass').value = "";
     }
 
     // תמיכה ב-Enter
-    document.getElementById('answer').addEventListener("keypress", function(e) {
-        if (e.key === "Enter") navigate();
+    document.getElementById('pass').addEventListener("keypress", function(e) {
+        if (e.key === "Enter") go();
     });
 </script>
 
